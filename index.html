@@ -1,98 +1,182 @@
-import turtle as t
-import math
-import random
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>love Wish - Flower Animation 🏵️🌷🌸</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-screen = t.Screen()
-screen.setup(width=800, height=800)
-screen.bgcolor("#11020f")
-screen.tracer(0)
+        body {
+            background-color: #11020f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
 
-t.speed(0)
-t.hideturtle()
-t.penup()
+        canvas {
+            background-color: #11020f;
+            max-width: 100vw;
+            max-height: 100vh;
+            box-shadow: 0 0 30px rgba(241, 19, 120, 0.25);
+        }
+    </style>
+</head>
+<body>
 
-WORD = "My Love"
-FONT = ("Arial", 8, "bold")
+<canvas id="🌙" width="800" height="800"></canvas>
 
+<script>
+const canvas = document.getElementById('flowerCanvas');
+const ctx = canvas.getContext('2d');
 
-def draw_petal(base, base_angle, length, width, color, points=20):
-    t.color(color)
-    bx, by = base
-    cos_a, sin_a = math.cos(base_angle), math.sin(base_angle)
-    for i in range(points + 1):
-        theta = 2 * math.pi * i / points
-        rad = length * math.sin(theta)
-        side = width * math.cos(theta) * math.cos(theta)
-        rx = rad * cos_a + side * sin_a
-        ry = rad * sin_a + side * cos_a
-        t.goto(bx + rx, by + ry)
-        t.write(WORD, align="center", font=FONT)
+// Center origin (0, 0)
+ctx.translate(400, 400);
 
+// ✏️ CUSTOMIZE YOUR MESSAGE HERE:
+const WORD = "Moon love"; 
+const FONT = "bold 12px Arial";
 
-def draw_leaf(base, angle_deg, length, width):
-    draw_petal(base, math.radians(angle_deg), length, width, "#14a83c", points=15)
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+function writeText(text, x, y, color, font = FONT, align = "center") {
+    ctx.fillStyle = color;
+    ctx.font = font;
+    ctx.textAlign = align;
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x, -y);
+}
 
-rings = [
-    {"radius": 4, "count": 4, "length": 35, "width": 15, "color": "#f1abcf", "offset": 0},
-    {"radius": 15, "count": 5, "length": 55, "width": 22, "color": "#f17ebb", "offset": 15},
-    {"radius": 30, "count": 7, "length": 75, "width": 30, "color": "#f159a2", "offset": 30},
-    {"radius": 45, "count": 9, "length": 95, "width": 40, "color": "#f13289", "offset": 15},
-    {"radius": 60, "count": 11, "length": 115, "width": 48, "color": "#f11378", "offset": 45},
-    {"radius": 75, "count": 12, "length": 135, "width": 55, "color": "#e7176d", "offset": 0},
-]
+// Draw individual petal points in real-time animation
+async function drawPetalAnimated(base, baseAngle, length, width, color, points = 20, delayMs = 12) {
+    const [bx, by] = base;
+    const cosA = Math.cos(baseAngle);
+    const sinA = Math.sin(baseAngle);
 
-# Draw Stem and Leaves
-t.goto(0, -90)
-t.setheading(160)
-t.pendown()
+    for (let i = 0; i <= points; i++) {
+        const theta = (2 * Math.PI * i) / points;
+        const rad = length * Math.sin(theta);
+        const side = width * Math.cos(theta) * Math.cos(theta);
+        const rx = rad * cosA + side * sinA;
+        const ry = rad * sinA + side * cosA;
 
-t.color("#14a83c")
-t.circle(250, 25)
-pos1, head1 = t.position(), t.heading()
-t.penup()
-draw_leaf(base=pos1, angle_deg=160, length=50, width=25)
-t.goto(pos1)
-t.setheading(head1)
-t.pendown()
+        writeText(WORD, bx + rx, by + ry, color);
+        await sleep(delayMs);
+    }
+}
 
-t.circle(250, 25)
-pos2, head2 = t.position(), t.heading()
-t.penup()
-draw_leaf(base=pos2, angle_deg=-30, length=55, width=28)
-t.goto(pos2)
-t.setheading(head2)
-t.pendown()
+async function drawLeafAnimated(base, angleDeg, length, width) {
+    await drawPetalAnimated(base, (angleDeg * Math.PI) / 180, length, width, "#14a83c", 15, 18);
+}
 
-t.circle(250, 20)
-t.penup()
+// Flower petal rings setup
+const rings = [
+    { radius: 4, count: 4, length: 35, width: 15, color: "#f1abcf", offset: 0 },
+    { radius: 15, count: 5, length: 55, width: 22, color: "#f17ebb", offset: 15 },
+    { radius: 30, count: 7, length: 75, width: 30, color: "#f159a2", offset: 30 },
+    { radius: 45, count: 9, length: 95, width: 40, color: "#f13289", offset: 15 },
+    { radius: 60, count: 11, length: 115, width: 48, color: "#f11378", offset: 45 },
+    { radius: 75, count: 12, length: 135, width: 55, color: "#e7176d", offset: 0 },
+];
 
-# Draw Flower Petals
-for ring in rings:
-    for i in range(ring["count"]):
-        angle = (360 / ring["count"]) * i + ring["offset"]
-        base_x = ring["radius"] * math.cos(math.radians(angle))
-        base_y = ring["radius"] * math.sin(math.radians(angle))
+// Turtle simulation class for stem
+class Turtle {
+    constructor() {
+        this.x = 0;
+        this.y = -90;
+        this.heading = 160;
+    }
 
-        draw_petal(
-            base=(base_x, base_y),
-            base_angle=math.radians(angle),
-            length=ring["length"],
-            width=ring["width"],
-            color=ring["color"]
-        )
+    async circle(radius, extent) {
+        ctx.strokeStyle = "#14a83c";
+        ctx.lineWidth = 2;
 
-# Background Stars
-t.color("#ff72a1")
-for i in range(12):
-    x = random.randint(-250, 250)
-    y = random.randint(-250, 250)
-    if math.hypot(x, y) > 120:
-        t.goto(x, y)
-        t.write("✦", align="center", font=("Courier", 14, "bold"))
+        const steps = Math.abs(Math.round(extent));
+        const stepAngle = extent / steps;
+        const stepDist = (2 * Math.PI * radius * (Math.abs(extent) / 360)) / steps;
 
-# Footer
-t.goto(0, -320)
-t.color("white")
-t.write("Click anywhere to close", align="center", font=("Arial", 10, "italic"))
-screen.exitonclick()
+        for (let i = 0; i < steps; i++) {
+            ctx.beginPath();
+            ctx.moveTo(this.x, -this.y);
+
+            this.heading += stepAngle / 2;
+            const rad = (this.heading * Math.PI) / 180;
+            this.x += Math.cos(rad) * stepDist;
+            this.y += Math.sin(rad) * stepDist;
+            this.heading += stepAngle / 2;
+
+            ctx.lineTo(this.x, -this.y);
+            ctx.stroke();
+            await sleep(20);
+        }
+    }
+}
+
+// Main animation sequence
+async function runAnimation() {
+    ctx.clearRect(-400, -400, 800, 800);
+
+    // 1. Stem and Leaves
+    const t = new Turtle();
+
+    await t.circle(250, 25);
+    const pos1 = [t.x, t.y];
+    await drawLeafAnimated(pos1, 160, 50, 25);
+
+    await t.circle(250, 25);
+    const pos2 = [t.x, t.y];
+    await drawLeafAnimated(pos2, -30, 55, 28);
+
+    await t.circle(250, 20);
+
+    // 2. Flower Petal Layers
+    for (const ring of rings) {
+        for (let i = 0; i < ring.count; i++) {
+            const angle = (360 / ring.count) * i + ring.offset;
+            const angleRad = (angle * Math.PI) / 180;
+            const baseX = ring.radius * Math.cos(angleRad);
+            const baseY = ring.radius * Math.sin(angleRad);
+
+            await drawPetalAnimated(
+                [baseX, baseY],
+                angleRad,
+                ring.length,
+                ring.width,
+                ring.color,
+                20,
+                8
+            );
+        }
+    }
+
+    // 3. Stars
+    const starPositions = [
+        [-180, 150], [200, 180], [-210, -100], [190, -150], 
+        [-140, 220], [150, -220], [-220, 50], [230, -50],
+        [-130, -190], [170, 120], [-190, -210], [210, 210]
+    ];
+
+    for (const [x, y] of starPositions) {
+        if (Math.hypot(x, y) > 120) {
+            writeText("✦", x, y, "#ff72a1", "bold 14px Courier");
+            await sleep(60);
+        }
+    }
+
+    // 4. Footer Message
+    writeText("Click anywhere to close", 0, -320, "white", "italic 10px Arial");
+}
+
+// Start animation
+runAnimation();
+</script>
+
+</body>
+</html>
