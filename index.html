@@ -41,8 +41,8 @@ const ctx = canvas.getContext('2d');
 ctx.translate(400, 400);
 
 // ✏️ CUSTOMIZE YOUR MESSAGE HERE:
-const WORD = "Moon love"; 
-const FONT = "bold 8px Arial";
+const WORD = "Moon love You"; 
+const FONT = "bold 13px Arial";
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -114,7 +114,7 @@ class Turtle {
 
             ctx.lineTo(this.x, -this.y);
             ctx.stroke();
-            await sleep(20);
+            await sleep(30);
         }
     }
 }
